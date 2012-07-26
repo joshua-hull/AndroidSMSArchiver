@@ -12,4 +12,8 @@ public class AndroidSMSArchiver extends Activity
         super.onCreate(savedInstanceState);
         setContentView(R.layout.main);
     }
+
+    public void startBackup (View view) {
+	setContentView(R.layout.backup);
+	
 }
