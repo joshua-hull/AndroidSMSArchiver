@@ -9,6 +9,9 @@ import android.net.Uri;
 import java.util.Arrays;
 import java.util.Collections;
 import android.util.Log;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
 
 public class AndroidSMSArchiver extends Activity
 {
@@ -21,6 +24,8 @@ public class AndroidSMSArchiver extends Activity
     }
 
     public void startBackup (View view) {
+	JSONObject file = new JSONObject(); 
+	
 	Log.d(TAG,"Inflating backup view.");
 	setContentView(R.layout.backup);
 	
@@ -41,30 +46,31 @@ public class AndroidSMSArchiver extends Activity
 		thread_cursor.moveToNext();	
     	}
 	
-	Log.d(TAG,"Iterating through threadIds[] to get time stamps.");
+	Log.d(TAG,"Found " + threadIds.length + " threads.");
 	//For Each thread ID get list of texts with matching thread ID.
+	JSONArray thread = new JSONArray();
 	for(int i = 0; i < threadIds.length; i++) {
 		Cursor conversation_cursor = getContentResolver().query(Uri.parse("content://sms/conversations/" + threadIds[i]) ,null,null,null,null);
-		String[] timeStamps = new String[conversation_cursor.getCount()];
-		int[] sortedIds = new int[conversation_cursor.getCount()];
-		
-		//Get time stamps for all messages with current thread_id
-		for(int j = 0; j < conversation_cursor.getCount(); j++) {
-			timeStamps[j] = conversation_cursor.getString(conversation_cursor.getColumnIndex("date"));
-			conversation_cursor.moveToNext();
+		try{
+			thread.put(threadIds[i]);
+		} catch (Exception e) {
+			Log.e(TAG,e.toString());
 		}
-		//Sort time stamps into descending order.
-		Arrays.sort(timeStamps, Collections.reverseOrder());
 		
-		//Go through time stamps looking for matching message.
-		for(int j = 0; j < timeStamps.length; j++) {
-			conversation_cursor.moveToFirst();
-			do {
-				if ( conversation_cursor.getString(conversation_cursor.getColumnIndex("date")) == timeStamps[j]) {
-					sortedIds[j] = conversation_cursor.getInt(conversation_cursor.getColumnIndex("_id"));
-				}
-			} while(conversation_cursor.moveToNext());
-		}
 	}
+	Log.d(TAG,"Finished!!");
+	t.append("Finished backing up!!\n");
+	String debug_file_string = "";
+	try{
+	file.put("_id",thread);
+	} catch (Exception e) {
+		Log.e(TAG,e.toString());
+	}
+	try{
+		debug_file_string = file.toString(4);
+	} catch (Exception e) {
+		Log.e(TAG,e.toString());
+	}
+	t.append(debug_file_string);
     }	
 }
