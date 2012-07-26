@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.database.Cursor;
 import android.view.View;
+import android.widget.TextView;
 import android.net.Uri;
 
 
@@ -21,8 +22,11 @@ public class AndroidSMSArchiver extends Activity
 	setContentView(R.layout.backup);
 	Cursor sms_cursor = getContentResolver().query(Uri.parse("content://sms/inbox"),null,null,null,null);
 	sms_cursor.moveToFirst();
+	TextView t = new TextView(this);
+	t = (TextView)findViewById(R.id.backing_up_info);
+	t.setText("Found " + sms_cursor.getCount() + " messages\n");
 	do{
-	
+		t.append("Message from " + sms_cursor.getString(2) + "\n");
 	}while(sms_cursor.moveToNext());
     }
 }

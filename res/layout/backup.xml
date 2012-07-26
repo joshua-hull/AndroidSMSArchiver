@@ -3,9 +3,20 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical" >
-    	<TextView android:id="@+id/text"
+    	<TextView android:id="@+id/backing_up_status"
     	 android:layout_width="wrap_content"
     	 android:layout_height="wrap_content"
     	 android:text="@string/backing_up"
     	 />
+    	 <ScrollView
+    	 android:layout_width="fill_parent"
+    	 android:layout_height="wrap_content"
+    	 android:scrollbars="vertical"
+    	 android:fillViewport="true">
+		<TextView android:id="@+id/backing_up_info"
+    	 	android:layout_width="wrap_content"
+    	 	android:layout_height="wrap_content"
+    	 	android:layout_weight="1.0"
+    	 	/>
+    	 </ScrollView>
 </LinearLayout>
