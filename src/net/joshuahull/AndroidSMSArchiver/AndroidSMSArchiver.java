@@ -2,6 +2,10 @@ package net.joshuahull.AndroidSMSArchiver;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.database.Cursor;
+import android.view.View;
+import android.net.Uri;
+
 
 public class AndroidSMSArchiver extends Activity
 {
@@ -15,5 +19,10 @@ public class AndroidSMSArchiver extends Activity
 
     public void startBackup (View view) {
 	setContentView(R.layout.backup);
+	Cursor sms_cursor = getContentResolver().query(Uri.parse("content://sms/inbox"),null,null,null,null);
+	sms_cursor.moveToFirst();
+	do{
 	
+	}while(sms_cursor.moveToNext());
+    }
 }
