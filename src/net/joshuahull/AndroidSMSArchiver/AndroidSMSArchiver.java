@@ -25,8 +25,8 @@ public class AndroidSMSArchiver extends Activity
 	TextView t = new TextView(this);
 	t = (TextView)findViewById(R.id.backing_up_info);
 	t.setText("Found " + sms_cursor.getCount() + " messages\n");
-	do{
-		t.append("Message from " + sms_cursor.getString(2) + "\n");
-	}while(sms_cursor.moveToNext());
-    }
+	do {
+		t.append(sms_cursor.getString(sms_cursor.getColumnIndex("address")) + " " + sms_cursor.getString(sms_cursor.getColumnIndex("body")) + "\n");
+    	} while (sms_cursor.moveToNext());	
+	}	
 }

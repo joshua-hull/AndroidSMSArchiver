@@ -1,0 +1,1 @@
+AndroidSMSArchiver is an Android application to export the phone's SMS database into another format. Currently the application merely dumps the received (and NOT the sent) messages to screen. Future features are likely to include exporting to json and XML files.
