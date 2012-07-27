@@ -11,6 +11,10 @@ import java.util.Collections;
 import android.util.Log;
 import org.json.JSONObject;
 import org.json.JSONArray;
+import java.util.Map;
+import java.util.TreeMap;
+import java.util.Set;
+import java.util.Iterator;
 
 
 public class AndroidSMSArchiver extends Activity
@@ -61,18 +65,30 @@ public class AndroidSMSArchiver extends Activity
 		} catch (Exception e) {
 			Log.e(TAG,e.toString());
 		}
+		Map<Integer,Integer> messagesTreeMap = new TreeMap<Integer,Integer>();
 		do {
-			try {
-				JSONObject message = new JSONObject();
-				message.put("_id",conversation_cursor.getString(conversation_cursor.getColumnIndex("_id")));
-				message.put("address",conversation_cursor.getString(conversation_cursor.getColumnIndex("address")));
-				message.put("body",conversation_cursor.getString(conversation_cursor.getColumnIndex("body")));
-				messages.put(message);
-			} catch (Exception e) {
-				Log.e(TAG,e.toString());
-			}
+			messagesTreeMap.put(conversation_cursor.getInt(conversation_cursor.getColumnIndex("sort_index")),conversation_cursor.getInt(conversation_cursor.getColumnIndex("_id")));
 		} while (conversation_cursor.moveToNext());
-		
+		Set messagesSet = messagesTreeMap.entrySet();
+		Iterator<Map.Entry<Integer, Integer>>  messagesMapIterator = messagesSet.iterator();
+		while(messagesMapIterator.hasNext()) {
+			Map.Entry<Integer,Integer>  messagesMapEntry = messagesMapIterator.next();
+			int id = messagesMapEntry.getValue();
+			conversation_cursor.moveToFirst();
+			do {
+				if (id == conversation_cursor.getInt(conversation_cursor.getColumnIndex("_id"))) {
+					try {
+						JSONObject message = new JSONObject();
+ 	 					message.put("_id",conversation_cursor.getString(conversation_cursor.getColumnIndex("_id")));
+ 	 					message.put("body",conversation_cursor.getString(conversation_cursor.getColumnIndex("body")));
+ 	 					message.put("person",conversation_cursor.getString(conversation_cursor.getColumnIndex("person")));
+ 	 					messages.put(message);
+					} catch (Exception e) {
+						Log.e(TAG,e.toString());
+					}
+				}
+			} while (conversation_cursor.moveToNext());
+		}
 	}
 	Log.d(TAG,"Finished!!");
 	t.append("Finished backing up!!\n");
