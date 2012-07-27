@@ -37,32 +37,48 @@ public class AndroidSMSArchiver extends Activity
 	t = (TextView)findViewById(R.id.backing_up_info);
 	t.setText("Threads found: " + thread_cursor.getCount() + "\n");
 	
-	int[] threadIds = new int[thread_cursor.getCount()];
+	String[] threadIds = new String[thread_cursor.getCount()];
 	
 	Log.d(TAG,"Gathering threadIds[].");
 	//Gather thread Ids into threadIds[].
 	for(int i = 0; i < thread_cursor.getCount(); i++) {
-		threadIds[i]=thread_cursor.getInt(thread_cursor.getColumnIndex("thread_id"));
+		threadIds[i]=thread_cursor.getString(thread_cursor.getColumnIndex("thread_id"));
 		thread_cursor.moveToNext();	
     	}
 	
 	Log.d(TAG,"Found " + threadIds.length + " threads.");
 	//For Each thread ID get list of texts with matching thread ID.
-	JSONArray thread = new JSONArray();
+	JSONObject threads = new JSONObject();
 	for(int i = 0; i < threadIds.length; i++) {
 		Cursor conversation_cursor = getContentResolver().query(Uri.parse("content://sms/conversations/" + threadIds[i]) ,null,null,null,null);
-		try{
-			thread.put(threadIds[i]);
+		conversation_cursor.moveToFirst();
+		
+		JSONObject thread = new JSONObject();
+		JSONArray messages = new JSONArray();
+
+		try {
+			threads.put(threadIds[i],messages);
 		} catch (Exception e) {
 			Log.e(TAG,e.toString());
 		}
+		do {
+			try {
+				JSONObject message = new JSONObject();
+				message.put("_id",conversation_cursor.getString(conversation_cursor.getColumnIndex("_id")));
+				message.put("address",conversation_cursor.getString(conversation_cursor.getColumnIndex("address")));
+				message.put("body",conversation_cursor.getString(conversation_cursor.getColumnIndex("body")));
+				messages.put(message);
+			} catch (Exception e) {
+				Log.e(TAG,e.toString());
+			}
+		} while (conversation_cursor.moveToNext());
 		
 	}
 	Log.d(TAG,"Finished!!");
 	t.append("Finished backing up!!\n");
 	String debug_file_string = "";
 	try{
-	file.put("_id",thread);
+	file.put("threads",threads);
 	} catch (Exception e) {
 		Log.e(TAG,e.toString());
 	}
